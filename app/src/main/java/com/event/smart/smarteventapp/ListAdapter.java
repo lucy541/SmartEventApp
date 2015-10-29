@@ -7,28 +7,34 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import org.androidannotations.annotations.RootContext;
+
 import java.util.ArrayList;
 
 /**
  * Created by lucy on 9/21/15.
  */
 public class ListAdapter  extends BaseAdapter{
-   Context context;
-    ArrayList<String> list;
 
-    public ListAdapter(Context context,    ArrayList<String> list ) {
-        this.context = context;
-        this.list= list;
+    @RootContext
+    Context context;
+
+    ArrayList<Guest> guests;
+
+    public ListAdapter(Context context, ArrayList<Guest> guests) {
+
+        this.guests = guests;
     }
 
     @Override
     public int getCount() {
-        return 10;
+
+        return guests.size();
     }
 
     @Override
     public Object getItem(int i) {
-        return null;
+        return guests.get(i);
     }
 
     @Override
@@ -38,14 +44,28 @@ public class ListAdapter  extends BaseAdapter{
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        LayoutInflater inflater = LayoutInflater.from(context);
 
-       View v = (TextView)inflater.inflate(android.R.layout.simple_list_item_1, null, true);
+
+        InviteItemView  inviteItemView = null;
+
+        if(view == null){
+
+            inviteItemView  = new InviteItemView(context);
+        }else{
+            inviteItemView  =(InviteItemView) view;
+         }
+
+
+            inviteItemView.Bind(guests.get(i));
+
+       /* LayoutInflater inflater = LayoutInflater.from(context);*/
+
+      /* View v = (TextView)inflater.inflate(android.R.layout.simple_list_item_1, null, true);
         TextView txt1 = (TextView) v.findViewById(android.R.id.text1);
-        txt1.setText("Lucy Gomez");
+        txt1.setText("Lucy Gomez");*/
 
         
 
-        return v;
+        return inviteItemView;
     }
 }
