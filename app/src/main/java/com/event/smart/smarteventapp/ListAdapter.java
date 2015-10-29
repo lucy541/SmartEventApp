@@ -44,6 +44,8 @@ public class ListAdapter  extends BaseAdapter{
         TextView txt1 = (TextView) v.findViewById(android.R.id.text1);
         txt1.setText("Lucy Gomez");
 
+        
+
         return v;
     }
 }
