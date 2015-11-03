@@ -2,6 +2,7 @@ package com.event.smart.smarteventapp;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,18 +16,28 @@ import android.widget.Button;
 import android.widget.ListView;
 
 
+import com.google.gson.Gson;
+
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.Background;
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.Fullscreen;
 import org.androidannotations.annotations.HttpsClient;
 import org.androidannotations.annotations.NoTitle;
+import org.androidannotations.annotations.RootContext;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.rest.Get;
+import org.androidannotations.annotations.rest.Rest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.util.EntityUtils;
+
+import java.io.IOException;
+import java.util.List;
 
 @NoTitle
 @Fullscreen
@@ -41,14 +52,17 @@ public class MainActivity extends Activity {
     ListView lista;
     @HttpsClient
     HttpClient httpsClient;
-    Activity a;
+    @RootContext
+    Context context;
+    @Bean
+    Gson gson;
 
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        a = this;
+   // @Rest(rootUrl = "http://services.smartevent.mx" , converters = { MappingJackson2HttpMessageConverter.class })
+    public interface SearchCall{
 
+        @Get("/")
+        List <Guest>search(String name);
 
 
     }
@@ -64,18 +78,18 @@ public class MainActivity extends Activity {
     @Click(R.id.button)
     void SearchClick(){
 
-        lista.setAdapter(new ListAdapter(a, null));
+        lista.setAdapter(new ListAdapter(context, null));
         lista.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(a, DetailActivity.class);
+                Intent i = new Intent(context, DetailActivity.class);
                 i.putExtra("NOMBRE", "DEFAULT");
                 i.putExtra("PERSONAS", 0);
                 i.putExtra("ACTUALES", 0);
                 i.putExtra("NINOS", 0);
                 i.putExtra("MESA", 0);
                 i.putExtra("ID", 0);
-                a.startActivity(i);
+                context.startActivity(i);
 
             }
         });
@@ -84,12 +98,15 @@ public class MainActivity extends Activity {
     }
 
 
+
+
+
     @AfterInject
     @Background
-    public void UserDataRequest(){
+    public void UserDataRequest(String code){
         try{
 
-            HttpGet httpGet = new HttpGet("");
+            HttpGet httpGet = new HttpGet("http://services.smartevent.mx/validate?code="+code);
             HttpResponse response = httpsClient.execute(httpGet);
             ResponseAction(response);
 
@@ -102,10 +119,34 @@ public class MainActivity extends Activity {
 
     }
 
+
+    public void openDetails(Guest guest){
+
+        Intent i = new Intent(context, DetailActivity.class);
+        i.putExtra("NOMBRE", guest.getName());
+        i.putExtra("PERSONAS", guest.getAdults());
+        i.putExtra("ACTUALES", guest.getKids());
+        i.putExtra("NINOS", guest.getKids());
+        i.putExtra("MESA", guest.getAdults());
+        i.putExtra("ID", guest.getId());
+        context.startActivity(i);
+
+
+
+    }
+
     @UiThread
     public void ResponseAction(HttpResponse response){
 
+        try {
+            Guest  guest = gson.fromJson(EntityUtils.toString(response.getEntity()),Guest.class);
 
+            openDetails(guest);
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -116,21 +157,13 @@ public class MainActivity extends Activity {
             String contents = result.getContents();
             if (contents != null) {
 
-                Intent i  = new Intent(a,DetailActivity.class);
-                i.putExtra("NOMBRE","DEFAULT");
-                i.putExtra("PERSONAS",0);
-                i.putExtra("ACTUALES",0);
-                i.putExtra("NINOS",0);
-                i.putExtra("MESA",0);
-                i.putExtra("ID",0);
-                a.startActivity(i);
 
+                UserDataRequest(contents);
 
 
             } else {
 
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                        a);
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 
                 // set title
                 alertDialogBuilder.setTitle("El código no pudo leerse");

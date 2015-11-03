@@ -36,6 +36,12 @@ dependencies {
     apt "org.androidannotations:androidannotations:3.0+"
     compile "org.androidannotations:androidannotations-api:3.0+"
     compile "org.apache.httpcomponents:httpcore:4.3.2"
+    compile 'com.google.code.gson:gson:1.7.2'
+    compile (
+            [group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.4.1'],
+            [group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.4.1'],
+            [group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.4.1']
+    )
 
 
 }
