@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.RootContext;
 
 import java.util.ArrayList;
@@ -14,16 +16,19 @@ import java.util.ArrayList;
 /**
  * Created by lucy on 9/21/15.
  */
+
 public class ListAdapter  extends BaseAdapter{
 
-    @RootContext
+
     Context context;
 
     ArrayList<Guest> guests;
 
+
     public ListAdapter(Context context, ArrayList<Guest> guests) {
 
         this.guests = guests;
+        this.context = context;
     }
 
     @Override

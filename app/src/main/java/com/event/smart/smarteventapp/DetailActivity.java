@@ -19,18 +19,19 @@ import org.androidannotations.annotations.ViewById;
 @EActivity(R.layout.info_activity)
 public class DetailActivity extends Activity {
 
-    @ViewById(R.id.textView2)
+    @ViewById(R.id.textView)
     TextView nombre;
-    @ViewById(R.id.textView3)
-    TextView personas;
-    @ViewById(R.id.textView4)
-    TextView actuales;
-    @ViewById(R.id.textView5)
-    TextView ninos;
+
     @ViewById(R.id.textView6)
+    TextView personas;
+
+    @ViewById(R.id.textView7)
+    TextView ninos;
+
+    @ViewById(R.id.textView8)
     TextView mesa;
 
-    String id;
+    String id_;
 
 
 
@@ -40,11 +41,10 @@ public class DetailActivity extends Activity {
 
 
         nombre.setText(this.getIntent().getStringExtra("NOMBRE"));
-        personas.setText(this.getIntent().getStringExtra("PERSONAS"));
-        actuales.setText(this.getIntent().getStringExtra("ACTUALES"));
-        ninos.setText(this.getIntent().getStringExtra("NINOS"));
-        mesa.setText(this.getIntent().getStringExtra("MESA"));
-        id = this.getIntent().getStringExtra("ID");
+        personas.setText(this.getIntent().getIntExtra("PERSONAS",0)+"");
+        ninos.setText(this.getIntent().getIntExtra("NINOS",0)+"");
+        mesa.setText(this.getIntent().getStringExtra("MESA")+"");
+        id_ = this.getIntent().getStringExtra("ID");
 
 
     }

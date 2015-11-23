@@ -52,18 +52,13 @@ public class MainActivity extends Activity {
     ListView lista;
     @HttpsClient
     HttpClient httpsClient;
-    @RootContext
+
     Context context;
-    @Bean
+
     Gson gson;
 
-
-   // @Rest(rootUrl = "http://services.smartevent.mx" , converters = { MappingJackson2HttpMessageConverter.class })
-    public interface SearchCall{
-
-        @Get("/")
-        List <Guest>search(String name);
-
+    public MainActivity(Context context) {
+        this.context = context;
 
     }
 
@@ -98,20 +93,23 @@ public class MainActivity extends Activity {
     }
 
 
+    public MainActivity() {
+    }
 
 
 
-    @AfterInject
     @Background
     public void UserDataRequest(String code){
         try{
 
             HttpGet httpGet = new HttpGet("http://services.smartevent.mx/validate?code="+code);
+            Log.v("", "CAll url" + "http://services.smartevent.mx/validate?code="+code);
             HttpResponse response = httpsClient.execute(httpGet);
-            ResponseAction(response);
+            String _response = EntityUtils.toString(response.getEntity());
+            ResponseAction(_response);
 
         }catch(Exception e){
-
+            Log.v("", "AT EXCEPTION"+ e);
 
 
         }
@@ -122,30 +120,35 @@ public class MainActivity extends Activity {
 
     public void openDetails(Guest guest){
 
-        Intent i = new Intent(context, DetailActivity.class);
+        context=this;
+
+        Intent i = new Intent(context, DetailActivity_.class);
         i.putExtra("NOMBRE", guest.getName());
         i.putExtra("PERSONAS", guest.getAdults());
         i.putExtra("ACTUALES", guest.getKids());
         i.putExtra("NINOS", guest.getKids());
         i.putExtra("MESA", guest.getAdults());
         i.putExtra("ID", guest.getId());
-        context.startActivity(i);
+        Activity a= (Activity) context;
+        a.startActivity(i);
 
 
 
     }
 
     @UiThread
-    public void ResponseAction(HttpResponse response){
+    public void ResponseAction(String response){
+
+        gson = new Gson();
 
         try {
-            Guest  guest = gson.fromJson(EntityUtils.toString(response.getEntity()),Guest.class);
+
+            Guest  guest = gson.fromJson(response,Guest.class);
 
             openDetails(guest);
 
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
         }
     }
 
@@ -153,10 +156,14 @@ public class MainActivity extends Activity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+        Log.v("", "AFTER GET INTENT******************************" + result +"  "+ resultCode+ " ");
+
         if (result != null) {
+
+            Log.v("", "RESULT NOT NULL");
             String contents = result.getContents();
             if (contents != null) {
-
+                Log.v("", "MAKE USER DATA REQUEST");
 
                 UserDataRequest(contents);
 
